@@ -41,8 +41,9 @@ live forecast. Injuries and current-day player availability are not modeled.
 Click **VIEW STATS** beneath a projected-point total to see estimated yards,
 receptions, and touchdowns (or passing stats and interceptions for QBs).
 Each stat uses the same 65% last-four / 35% season blend as projected fantasy
-points. Scoring the unrounded estimates reproduces the player projection;
-displayed figures are rounded. Fractional TDs represent expected production,
+points. Scoring the unrounded estimates reproduces the underlying projection
+before the original points are rounded to two decimals; displayed stat values
+are rounded separately. Fractional TDs represent expected production,
 not exact single-game outcomes. Comparisons also include the stat line.
 
 Fantasy scoring:

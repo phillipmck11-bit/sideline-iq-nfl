@@ -234,9 +234,9 @@
         <span class="microtag">65% RECENT + 35% SEASON</span></div>
       <div class="statline-grid">${fields.map(item => `
         <div class="statline-cell"><small>${escape(item.label)}</small><strong>${item.value}</strong></div>`).join("")}</div>
-      <p>The unrounded estimates reproduce <strong>${num(p.expected_ppg, 2)} fantasy points</strong> under your scoring.
+      <p>These blended stats underpin <strong>${num(p.expected_ppg, 2)} fantasy points</strong> under your scoring.
         Fractional receptions and touchdowns are expected averages, not exact game outcomes.
-        Displayed stats are rounded.</p>
+        Displayed values are rounded, so manual point totals may differ slightly.</p>
     </div>`;
   }
 
