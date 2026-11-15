@@ -85,9 +85,10 @@
             <div class="section-kicker"><span>THE PLAYER BOARD</span><span class="kicker-right">02 / RANKINGS</span></div>
             <div class="board">
               <div class="board-header">
-                <div><div class="board-caption">FANTASY PROJECTIONS</div><h2>Player rankings <span class="title-dot">.</span></h2><p id="boardDescription">Week 10 baseline projections · strictly prior-week data</p></div>
+                <div><div class="board-caption">FANTASY PROJECTIONS</div><h2>Player rankings <span class="title-dot">.</span></h2><p id="boardDescription">Week 10 validated stat-first projections · strictly prior-week data</p></div>
                 <div class="board-header-actions">
                   <label class="select-wrap season-wrap">SEASON <select id="seasonSelect" aria-label="Select season"><option value="2026">2026</option><option value="2025">2025</option></select></label>
+                  <label class="select-wrap model-wrap" id="modelFilterWrap">MODEL <select id="modelSelect" aria-label="Select projection method"><option value="stat-first">Stat-first</option><option value="baseline">65/35 baseline</option></select></label>
                   <button class="outline-btn" id="exportCsv" title="Download filtered rows as CSV">↓ <span>Export CSV</span></button>
                 </div>
               </div>
@@ -115,27 +116,27 @@
                     <th><button class="sort-btn" data-sort="recent_ppg">LAST 4</button></th>
                     <th><button class="sort-btn current" data-sort="expected_ppg">PROJ PTS <span>↓</span></button></th>
                     <th><button class="sort-btn" data-sort="delta">Δ VS SZN</button></th>
-                    <th>OPP TREND <span class="help-icon" title="Opponent's last four defensive games. Descriptive only; not used in baseline.">ⓘ</span></th>
+                    <th>OPP TREND <span class="help-icon" title="Opponent's prior four defensive games. Selected opponent history is used by stat-first models; newer quality-adjusted measures remain experimental.">ⓘ</span></th>
                     <th class="actions-head">COMPARE</th>
                   </tr></thead>
                   <tbody id="rankBody"><tr><td colspan="9" class="table-loading">Loading verified player statistics...</td></tr></tbody>
                 </table>
               </div>
-              <div class="board-footer"><span id="tableFootnote">Projection = 65% last four games + 35% season average.</span><button id="loadMore" class="show-more">SHOW MORE PLAYERS <span>↓</span></button></div>
+              <div class="board-footer"><span id="tableFootnote">Stat-first: forecast box-score stats first, then sum custom fantasy points.</span><button id="loadMore" class="show-more">SHOW MORE PLAYERS <span>↓</span></button></div>
             </div>
           </section>
 
           <div class="insight-grid">
             <section class="insight-card">
               <div class="insight-head"><span class="microtag">MODEL BENCHMARK</span><button class="text-btn" data-go="research">Full analysis →</button></div>
-              <h3>What does opponent context add?</h3><p>2025 matchup-only improvement in mean absolute error versus the player-only model. Higher positive gain is better.</p>
+              <h3>Does the new model beat the baseline?</h3><p>2026 Weeks 1–9 holdout: reduction in fantasy-point mean absolute error from the 65/35 historical-stat baseline. Positive gains are better.</p>
               <div id="accuracyMini" class="accuracy-mini"></div>
-              <div class="insight-foot">Historical participation-conditioned backtest <span>•</span> Not a live forecast guarantee</div>
+              <div class="insight-foot">Frozen 2024–25 training <span>•</span> 2026 held-out player-games <span>•</span> No live-week guarantee</div>
             </section>
             <section class="insight-card scouting-card">
               <div class="insight-head"><span class="microtag blue">SCOUTING NOTE</span><span class="spark-star">✳</span></div>
               <h3>Know what the numbers can—and can't—tell you.</h3>
-              <p>Explosive plays, opponent air yards, and yards after catch are available as historical matchup context. Rushing yards over expected and alignment splits are not claimed where the free feed cannot verify them.</p>
+              <p>Opportunity share, prior efficiency, team volume and defensive history inform the stat-first forecast. New opponent-adjusted efficiency helped QBs/RBs in research but is not yet applied to these live estimates.</p>
               <button class="text-btn" data-go="methodology">Explore data coverage →</button>
             </section>
           </div>
@@ -149,18 +150,18 @@
             <label>PLAYER TWO <select id="compareSecond"><option value="">Choose a player</option></select></label>
           </div>
           <div id="compareResults" class="compare-grid"><div class="empty-state wide">Select two players to see your matchup.</div></div>
-          <div class="compare-footnote">Figures reflect your scoring rules. For 2026, no injury adjustment or matchup coefficient is applied.</div>
+          <div class="compare-footnote">The 2026 stat-first models use prior player, team and opponent tendencies. There is no injury adjustment, and advanced opponent-quality adjustments are still experimental.</div>
         </section>
 
         <section id="view-research" class="view alt-view" aria-labelledby="researchHeading">
-          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> VALIDATION LAB / 03</div><h1 id="researchHeading">Trust the test.<br/><em>Challenge the model.</em></h1><p>Results from chronological 2025 walk-forward experiments, using your requested scoring and strictly earlier-game features.</p></div>
-          <div class="research-banner"><span class="research-banner-icon">✓</span><div><strong>Real-data comparison complete</strong><p>Four position cohorts, 18 evaluation weeks. These are retrospective, participation-conditioned results—not verified live-week prediction accuracy.</p></div><span class="research-banner-tag">RESEARCH ONLY</span></div>
+          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> VALIDATION LAB / 03</div><h1 id="researchHeading">Trust the test.<br/><em>Challenge the model.</em></h1><p>2025-selected, stat-first models validated against nine complete 2026 weeks. All predictions use your scoring and information from earlier games.</p></div>
+          <div class="research-banner"><span class="research-banner-icon">✓</span><div><strong>2026 holdout validation complete</strong><p>2,616 recorded-opportunity player-games across Weeks 1–9, with model weights trained on 2024–25. The additional opponent-efficiency experiment is exploratory.</p></div><span class="research-banner-tag">2026 HOLDOUT</span></div>
           <div class="research-grid" id="researchCards"></div>
-          <div class="research-method"><span class="microtag">READ THE RESULT</span><h3>What counts as a meaningful win?</h3><div class="method-steps"><div><span>01</span><strong>Beat a basic benchmark</strong><p>Compare model error with an ordinary recent-scoring average.</p></div><div><span>02</span><strong>Check stability</strong><p>Review week-cluster confidence intervals and large-miss RMSE.</p></div><div><span>03</span><strong>Keep future information out</strong><p>Use past games only; research cohorts still exclude zero-opportunity players.</p></div></div></div>
+          <div class="research-method"><span class="microtag">READ THE RESULT</span><h3>What counts as a meaningful win?</h3><div class="method-steps"><div><span>01</span><strong>Beat the history baseline</strong><p>Compare projected-stat fantasy errors against 65/35 historical stats.</p></div><div><span>02</span><strong>Hold out a new season</strong><p>Freeze 2024–25 model fitting and evaluate 2026 weeks separately.</p></div><div><span>03</span><strong>Use plausible stat lines</strong><p>Reconcile targets, catches, carries and touchdowns before scoring.</p></div></div><p class="research-caveat">* Adjusted-defense experiment is not part of the production projections. A positive result on 2026 is exploratory until verified again on untouched games.</p></div>
         </section>
 
         <section id="view-methodology" class="view alt-view" aria-labelledby="methodHeading">
-          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> THE PLAYBOOK / 04</div><h1 id="methodHeading">Built for<br/><em>your league.</em></h1><p>Exact scoring, transparent baselines, and clearly labeled limits. No subscriptions or paid-data dependencies.</p></div>
+          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> THE PLAYBOOK / 04</div><h1 id="methodHeading">Built for<br/><em>your league.</em></h1><p>Predict the box score, derive the fantasy score, and show every component. No subscriptions or paid-data dependencies.</p></div>
           <div class="method-grid">
             <section class="method-card"><span class="microtag">CUSTOM SCORING</span><h3>The points system</h3><div class="scoring-list">
               <div><span>Passing yard</span><strong>0.05</strong></div>
@@ -171,7 +172,7 @@
               <div><span>RB / WR reception</span><strong>1.0</strong></div>
               <div><span>TE reception</span><strong>1.5</strong></div>
             </div></section>
-            <section class="method-card"><span class="microtag">PREGAME ENGINE</span><h3>How the projection works</h3><div class="formula"><strong>65%</strong> <span>LAST 4 OBSERVED GAMES</span><div class="formula-plus">+</div><strong>35%</strong> <span>SEASON POINTS PER GAME</span></div><p>All inputs stop before the target week. This baseline does not yet incorporate opponent metrics into projection weights.</p></section>
+            <section class="method-card"><span class="microtag">PREGAME ENGINE</span><h3>How the projection works</h3><div class="formula"><strong>01</strong> <span>PREDICT CARRIES, TARGETS & ATTEMPTS</span><div class="formula-plus">↓</div><strong>02</strong> <span>ESTIMATE YARDS, CATCHES, TDs & INTs</span><div class="formula-plus">↓</div><strong>03</strong> <span>SUM EXACT FANTASY POINTS</span></div><p>QB/TE use nonlinear per-stat models; RB/WR use regularized football-analytics models. All inputs end before Week 10. You can switch back to the 65/35 historical-stat baseline from the rankings.</p></section>
           </div>
           <section class="coverage-card"><span class="microtag">FEATURE AVAILABILITY</span><h3>What we can verify for free</h3><div class="coverage-table">
             <div><span>QB passing air yards / attempt</span><strong class="available">AVAILABLE</strong></div>
@@ -180,7 +181,7 @@
             <div><span>QB rushes inside the 10</span><strong class="unavailable">DEFERRED</strong></div>
             <div><span>Rushing yards over expected (RYOE)</span><strong class="unavailable">NOT VERIFIED</strong></div>
             <div><span>Slot / outside / inline alignment splits</span><strong class="unavailable">DEFERRED</strong></div>
-          </div><p class="source-note">Source: publicly available <a href="https://github.com/nflverse/nflverse-data/releases/tag/stats_player" target="_blank" rel="noopener">nflverse weekly player statistics</a>. Matchup descriptors use observed defensive trends from the four most recent completed games. Historical model research is kept separate.</p></section>
+          </div><p class="source-note">Source: publicly available <a href="https://github.com/nflverse/nflverse-data/releases/tag/stats_player" target="_blank" rel="noopener">nflverse weekly player statistics</a> and the existing 2024–25 player-game research. Matchup descriptors use completed defensive games. Week 10 is a pregame snapshot based on data through Week 9.</p></section>
         </section>
       </main>
       <footer class="footer"><span>SIDELINE<span class="lime">IQ</span> <span class="divider-dot">•</span> OPEN-DATA NFL ANALYTICS</span><span>NO PAID APIS <span class="divider-dot">/</span> NO AUTOMATED BILLING <span class="divider-dot">/</span> BUILT FOR THE GAME</span></footer>

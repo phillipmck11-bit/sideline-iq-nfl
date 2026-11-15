@@ -5,6 +5,7 @@
     payload: null, season: "2026", position: "ALL", team: "ALL",
     games: 0, query: "", hideByes: false, sort: "expected_ppg",
     sortDir: "desc", visible: 35, compare: [null, null], drawer: null,
+    projectionMode: "stat-first",
   };
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -15,7 +16,20 @@
   })[ch]);
   const signed = (value) => (value > 0 ? "+" : "") + num(value);
   const trendClass = (delta) => delta > .05 ? "delta-pos" : delta < -.05 ? "delta-neg" : "delta-neutral";
-  const activeRows = () => state.payload?.seasons?.[state.season] ?? [];
+  const activeRows = () => {
+    const rows = state.payload?.seasons?.[state.season] ?? [];
+    if (state.season !== "2026" || state.projectionMode === "stat-first") return rows;
+    const fallback = rows.map(p => ({ ...p,
+      expected_ppg: p.baseline_expected_ppg,
+      stat_line: p.baseline_stat_line,
+      projection_model: "65/35 historical-stat baseline",
+      delta: +(p.baseline_expected_ppg - p.ppg).toFixed(2),
+    }));
+    const positions = { QB: 0, RB: 0, WR: 0, TE: 0 };
+    fallback.sort((a, b) => b.expected_ppg - a.expected_ppg || a.name.localeCompare(b.name));
+    fallback.forEach(p => { p.position_rank = ++positions[p.position]; });
+    return fallback;
+  };
 
   function view(name) {
     $$(".view").forEach(item => item.classList.toggle("active", item.id === "view-" + name));
@@ -59,12 +73,15 @@
       ? bye.join(" · ") : "2025 is a retrospective view";
     $("#countAll").textContent = rows.length;
     $("#boardDescription").textContent = state.season === "2026"
-      ? `Week ${meta.target_week} baseline · completed games through Week ${meta.last_observed_week}`
+      ? `Week ${meta.target_week} ${state.projectionMode === "stat-first" ? "stat-first model" : "65/35 baseline"} · completed data through Week ${meta.last_observed_week}`
       : "2025 retrospective season form · not a future-game prediction";
     $("#tableFootnote").textContent = state.season === "2026"
-      ? "2026 projections are prior-week baselines. Opponent trends are descriptive, not model weights."
+      ? state.projectionMode === "stat-first"
+        ? "2025-trained, 2026-validated stat-first forecasts. All projected points come from a reconciled box score; selected opponent history is included."
+        : "Comparison view: 65% last four + 35% season per stat. Advanced opponent adjustments are still experimental."
       : "2025 estimated PPG represents end-of-season form, not an out-of-sample pregame forecast.";
     $("#byeFilterLabel").hidden = state.season === "2025";
+    $("#modelFilterWrap").hidden = state.season === "2025";
   }
 
   function populateTeams() {
@@ -103,7 +120,7 @@
     const label = p.position === "RB"
       ? `RUSH ${num(d.explosive_rushes_allowed_pg)} /G`
       : `PASS ${num(d.explosive_passes_allowed_pg)} /G`;
-    return `<span class="trend-tag" title="Opponent explosive plays allowed per game over last four completed games; not used in this baseline projection.">${label}</span>`;
+    return `<span class="trend-tag" title="Opponent explosive plays allowed per game over four earlier games. Some matchup statistics are used by stat-first models; quality-adjusted defenses are still experimental.">${label}</span>`;
   }
 
   function renderRankings() {
@@ -144,7 +161,7 @@
     const research = state.payload.research;
     $("#accuracyMini").innerHTML = ["QB", "RB", "WR", "TE"].map(position => {
       const r = research.find(item => item.position === position);
-      return `<div class="accuracy-position"><span>${position}</span><strong>${num(r.matchup_mae_gain, 3)} <span style="font-size:11px">↓</span></strong><small>MAE gain vs player-only</small></div>`;
+      return `<div class="accuracy-position"><span>${position}</span><strong>${num(r.mae_gain, 2)} <span style="font-size:11px">↓</span></strong><small>2026 FP MAE gain vs baseline</small></div>`;
     }).join("");
   }
 
@@ -203,8 +220,10 @@
     if (!s) return [];
     const field = (label, key, digits = 1) => ({label, value: num(s[key], digits)});
     if (p.position === "QB") return [
+      field("Pass attempts", "attempts"),
       field("Pass yards", "passing_yards"), field("Pass TDs", "passing_tds", 2),
       field("Interceptions", "passing_interceptions", 2),
+      field("Rush attempts", "carries"),
       field("Rush yards", "rushing_yards"), field("Rush TDs", "rushing_tds", 2),
     ];
     const base = p.position === "RB" ? [
@@ -226,17 +245,41 @@
     return base;
   }
 
+  function scoringComponents(p) {
+    const s = p.stat_line;
+    if (!s) return [];
+    const receptionBonus = p.position === "TE" ? 1.5 : p.position === "QB" ? 0 : 1;
+    return [
+      { label: "Passing yards", points: .05 * s.passing_yards },
+      { label: "Passing TDs", points: 4 * s.passing_tds },
+      { label: "Interceptions", points: -2 * s.passing_interceptions },
+      { label: "Rushing yards", points: .1 * s.rushing_yards },
+      { label: "Rushing TDs", points: 6 * s.rushing_tds },
+      { label: "Receiving yards", points: .1 * s.receiving_yards },
+      { label: "Receiving TDs", points: 6 * s.receiving_tds },
+      { label: "Receptions", points: receptionBonus * s.receptions },
+    ];
+  }
+
   function projectedStatPanel(p) {
     const fields = projectedStatFields(p);
     if (!fields.length) return "";
+    const tag = state.season === "2025" ? "RETROSPECTIVE 65/35"
+      : state.projectionMode === "stat-first" ? "STAT-FIRST · 2026 VALIDATED" : "65/35 BASELINE";
+    const contributions = scoringComponents(p);
+    const calculated = contributions.reduce((sum, item) => sum + item.points, 0);
     return `<div class="drawer-section projected-line">
       <div class="statline-heading"><h3>${state.season === "2026" ? "Projected stat line" : "Retrospective stat averages"}</h3>
-        <span class="microtag">65% RECENT + 35% SEASON</span></div>
+        <span class="microtag">${tag}</span></div>
       <div class="statline-grid">${fields.map(item => `
         <div class="statline-cell"><small>${escape(item.label)}</small><strong>${item.value}</strong></div>`).join("")}</div>
-      <p>These blended stats underpin <strong>${num(p.expected_ppg, 2)} fantasy points</strong> under your scoring.
-        Fractional receptions and touchdowns are expected averages, not exact game outcomes.
-        Displayed values are rounded, so manual point totals may differ slightly.</p>
+      <div class="statline-heading points-heading"><h3>How those stats score</h3><span class="microtag">EXACT LEAGUE RULES</span></div>
+      <div class="point-breakdown">${contributions.filter(item => Math.abs(item.points) > .001).map(item => `<div><span>${escape(item.label)}</span>
+          <strong class="${item.points < 0 ? "negative" : ""}">${item.points > 0 ? "+" : ""}${num(item.points, 2)}</strong></div>`).join("")}</div>
+      <div class="point-total"><span>PROJECTED TOTAL</span><strong>${num(calculated, 2)} pts</strong></div>
+      <p>${p.opponent === "BYE" && state.season === "2026" ? "BYE week: no game, so all projected stats and points are zero. " : ""}
+        Fractional counts and touchdowns represent expected averages; displayed stat values are rounded, while
+        the fantasy total is calculated from full-precision estimates.</p>
     </div>`;
   }
 
@@ -276,15 +319,15 @@
       const worseRmse = r.model_rmse > r.baseline_rmse;
       return `<article class="research-card">
         <div class="research-card-top"><strong>${position}</strong><span class="research-signal ${r.signal ? "good" : ""}">${r.signal ? "SIGNAL" : "MIXED"}</span></div>
-        <div class="error-label">MODEL MAE / FANTASY PTS</div>
-        <div class="error-main">${num(r.model_mae, 2)} <span>↓ ${num(r.mae_gain, 2)} vs PPG</span></div>
+        <div class="error-label">2026 FROZEN STAT-FIRST MAE / FANTASY PTS</div>
+        <div class="error-main">${num(r.model_mae, 2)} <span>↓ ${num(r.mae_gain, 2)} vs 65/35</span></div>
         <div class="error-data">
-          <div class="error-row"><span>Basic PPG MAE</span><strong>${num(r.baseline_mae, 2)}</strong></div>
+          <div class="error-row"><span>65/35 stat baseline MAE</span><strong>${num(r.baseline_mae, 2)}</strong></div>
           <div class="error-row"><span>Model RMSE</span><strong class="${worseRmse ? "bad" : ""}">${num(r.model_rmse, 2)}</strong></div>
           <div class="error-row"><span>Baseline RMSE</span><strong>${num(r.baseline_rmse, 2)}</strong></div>
           <div class="error-row"><span>Player-games</span><strong>${commas(r.player_games)}</strong></div>
           <div class="error-row"><span>95% MAE gain CI</span><strong>${num(r.ci_low, 2)} to ${num(r.ci_high, 2)}</strong></div>
-          <div class="error-row"><span>Matchup-only MAE gain</span><strong>${num(r.matchup_mae_gain, 3)}</strong></div>
+          <div class="error-row"><span>Adjusted-defense experiment*</span><strong>${signed(r.matchup_mae_gain)}</strong></div>
         </div>
       </article>`;
     }).join("");
@@ -329,7 +372,7 @@
       <div class="drawer-two"><div><small>SEASON PPG</small><strong>${num(p.ppg)}</strong></div><div><small>LAST 4 PPG</small><strong>${num(p.recent_ppg)}</strong></div></div>
       <div class="drawer-section"><h3>Weekly production</h3>${trendSVG(p.trend)}<p>Each point reflects only your league's stated scoring categories.</p></div>
       <div class="drawer-section"><h3>Player & opponent lens</h3>${details.map(a => drawerFeature(...a)).join("")}
-        <p>Opponent trends: most recent four completed defensive games. These metrics are <strong>not</strong> currently part of the projection formula.</p></div>
+        <p>The stat-first model includes pregame opponent tendencies, but quality-adjusted defensive upgrades remain <strong>experimental</strong> until additional holdout validation.</p></div>
       <button class="primary-btn drawer-add" data-drawer-pin="${escape(p.id)}">${state.compare.includes(p.id) ? "Remove from comparison" : "+ Add to comparison"}</button>
     </div>`;
   }
@@ -353,15 +396,22 @@
 
   function downloadCsv() {
     const columns = ["position_rank", "name", "position", "team", "opponent", "home_away",
-      "games", "ppg", "recent_ppg", "expected_ppg", "delta"];
+      "games", "ppg", "recent_ppg", "expected_ppg", "delta", "projection_model",
+      "baseline_expected_ppg", ...[
+        "attempts", "passing_yards", "passing_tds", "passing_interceptions",
+        "carries", "rushing_yards", "rushing_tds", "targets", "receptions",
+        "receiving_yards", "receiving_tds",
+      ].map(name => "projected_" + name)];
     const values = filteredRows();
     const csvField = value => '"' + String(value ?? "").replace(/"/g, '""') + '"';
-    const lines = [columns.join(","), ...values.map(p => columns.map(key => csvField(p[key])).join(","))];
+    const cell = (p, key) => key.startsWith("projected_") ? p.stat_line?.[key.slice(10)] : p[key];
+    const lines = [columns.join(","), ...values.map(p => columns.map(key => csvField(cell(p, key))).join(","))];
     const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const anchor = document.createElement("a");
     const url = URL.createObjectURL(blob);
     anchor.href = url;
-    anchor.download = `sideline-iq-${state.season}-${state.season === "2026" ? "week10" : "season"}-custom-scoring.csv`;
+    const suffix = state.season === "2026" ? `week${state.payload.meta.target_week}-${state.projectionMode}` : "season";
+    anchor.download = `sideline-iq-${state.season}-${suffix}-custom-scoring.csv`;
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -386,6 +436,17 @@
     $("#menuToggle").addEventListener("click", () => $(".sidebar").classList.toggle("open"));
     $("#jumpRankings").addEventListener("click", () => $("#rankingsAnchor").scrollIntoView({ behavior: "smooth" }));
     $("#seasonSelect").addEventListener("change", e => { state.season = e.target.value; refreshSeason(); });
+    $("#modelSelect").addEventListener("change", e => {
+      state.projectionMode = e.target.value;
+      state.visible = 35;
+      renderHero();
+      renderRankings();
+      if ($("#view-comparison").classList.contains("active")) renderComparison();
+      if (state.drawer) {
+        const p = activeRows().find(item => item.id === state.drawer);
+        if (p) renderDrawer(p);
+      }
+    });
     $$(".position-tab").forEach(btn => btn.addEventListener("click", () => {
       state.position = btn.dataset.position;
       state.visible = 35;
