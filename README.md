@@ -10,7 +10,9 @@ GitHub Pages with **zero paid services, keys, or background jobs**.
 - `assets/app.js`: interactive rankings, search, filters, player scouting
   panel, projected stat-line breakdowns, comparisons, research accuracy,
   and browser-based CSV exports
-- `data/dashboard.json`: verified public-data snapshot
+- `data/dashboard.json`: audited Week 10 pregame snapshot with **stat-first**
+  fantasy projections, coherent projected box scores, and the previous 65/35
+  baseline retained for instant comparison
 - `.nojekyll`: tells Pages to serve static files unchanged
 
 ## Publish for $0
@@ -32,19 +34,27 @@ snapshot is frozen until you manually publish a new `dashboard.json`.
 
 ## Data & scoring
 
-2026 Week 10 pregame projections use only weeks 1–9. The model is a
-**transparent baseline**: 65% average of the last four observed games plus
-35% season average. Matchup features appear as context, but they do not
-change projected points. The 2025 view is retrospective, not a 2025
-live forecast. Injuries and current-day player availability are not modeled.
+2026 Week 10 pregame projections use only weeks 1–9 of 2026, plus 2024–25
+historical training. The **default is a validated stat-first model**: it
+predicts carries, targets, passing attempts, yards, receptions, touchdowns,
+and interceptions separately, then applies the user's exact fantasy scoring.
+QB and TE use independent nonlinear models for each stat; RB and WR use
+regularized linear stat models that exclude past fantasy points as inputs.
+All outputs are reconciled so receptions never exceed targets and touchdowns
+never exceed their related opportunities. BYE players receive zero game
+projections. The **Model** selector switches to the previous 65% last four /
+35% same-season historical-stat baseline without removing that reference.
+
+The 2025 view remains retrospective, not a live forecast. Injuries and
+current-day player availability are not modeled.
 
 Click **VIEW STATS** beneath a projected-point total to see estimated yards,
 receptions, and touchdowns (or passing stats and interceptions for QBs).
-Each stat uses the same 65% last-four / 35% season blend as projected fantasy
-points. Scoring the unrounded estimates reproduces the underlying projection
-before the original points are rounded to two decimals; displayed stat values
-are rounded separately. Fractional TDs represent expected production,
-not exact single-game outcomes. Comparisons also include the stat line.
+The player drawer includes **every stat and its point contribution** under the
+league's scoring. The score is calculated from **full-precision** stat
+projections, then displayed to two decimals. Fractional TDs represent expected
+production, not single-game realized outcomes. Comparisons and CSV exports
+also include the projected stat line.
 
 Fantasy scoring:
 
@@ -55,8 +65,17 @@ Fantasy scoring:
 
 Weekly stats come from the freely available [nflverse Player Summary Stats
 release](https://github.com/nflverse/nflverse-data/releases/tag/stats_player).
-Research accuracy is drawn from the separately audited 2025 walk-forward
-model comparison and remains participation-conditioned.
+The model families were selected during the 2025 walk-forward tests and then
+validated with frozen 2024–25 weights against 2,616 2026 player-games in
+Weeks 1–9. Across the four positions, the 2026 MAE gains over the 65/35
+baseline were QB 6.8%, RB 4.4%, WR 7.9%, and TE 8.8%. The audited model
+accuracy remains **participation-conditioned**, not a perfect active-roster
+or injury forecast.
+
+Standard opponent/team history is included in the default stat models. New
+opponent-quality-adjusted features are **research only**: they helped QB and RB
+accuracy in exploratory 2026 tests but did not improve WR/TE models. They have
+not been added to the public projections pending another untouched holdout.
 
 ## Local preview
 
@@ -71,7 +90,10 @@ file may prevent JavaScript from loading `data/dashboard.json`.
 
 ## Future refresh
 
-The private research workspace includes `scripts/build_static_dashboard.py`
-and `scripts/export_week11_rankings.py` to rebuild the published JSON from
-verified free stats files. Automating this step is deferred until after the
-dashboard is live, as requested.
+The companion private research workspace includes
+`scripts/build_week10_stat_first_dashboard.py` to build the stat-first JSON
+snapshot from the prior-week historical player-game data, saved baseline
+dashboard, and frozen 2025 model choices. The public site stores only the
+derived static JSON. **Do not run the older baseline-only builder after this
+integration without reapplying the stat-first overlay.** Weekly automation
+is deferred, as requested.

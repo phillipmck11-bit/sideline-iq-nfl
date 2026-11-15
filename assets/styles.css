@@ -49,3 +49,18 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)
 .compare-statline span{background:#20352f;border:1px solid #3a5449;border-radius:4px;padding:5px 7px;color:#acc5b6;font-size:10px}
 .compare-statline strong{color:var(--lime)}
 @media(max-width:445px){.statline-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Validated stat-first projection selector and exact scoring decomposition. */
+.model-wrap{border-color:#607f4d;background:#1c332c}
+.model-wrap select{color:var(--lime);max-width:155px}
+.points-heading{margin-top:19px;padding-top:16px;border-top:1px solid #315344}
+.point-breakdown{border:1px solid #304e44;border-radius:6px;overflow:hidden;background:#142a2b}
+.point-breakdown>div{display:flex;justify-content:space-between;gap:12px;padding:9px 13px;border-bottom:1px solid #2a453e;font-size:11px;color:#bbcdc4}
+.point-breakdown>div:last-child{border-bottom:0}
+.point-breakdown strong{color:#e6f6ea;font-variant-numeric:tabular-nums}
+.point-breakdown strong.negative{color:#eda3a0}
+.point-total{display:flex;align-items:center;justify-content:space-between;gap:15px;background:#214431;border:1px solid #4c7c4a;padding:13px;border-radius:6px;margin-top:8px}
+.point-total span{font-size:10px;font-weight:900;letter-spacing:1.1px;color:#b8d5b7}
+.point-total strong{font:900 25px var(--head);color:var(--lime)}
+.research-caveat{font-size:10px;color:#90a7b7;margin:20px 0 0;line-height:1.7}
+@media(max-width:740px){.board-header-actions{flex-wrap:wrap;justify-content:flex-start}.model-wrap{flex:1 1 auto}.model-wrap select{width:100%}}
