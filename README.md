@@ -17,6 +17,9 @@ GitHub Pages with **zero paid services, keys, or background jobs**.
 - `scripts/build_research_payload.py`: local-only, standard-library export
   script for turning the validated 251-player ZIP into the compact public JSON
 - `tests/test_research_payload.py`: offline consistency and scoring checks
+- `assets/sleeper-core.js` and `assets/sleeper-league.js`: free client-side
+  Sleeper league lookup, roster ID matching, optimized starting lineup
+  forecasts, matchup comparisons and remaining-season league rankings
 - `data/dashboard.json`: audited Week 10 pregame snapshot with **stat-first**
   fantasy projections, coherent projected box scores, and the previous 65/35
   baseline retained for instant comparison
@@ -74,6 +77,41 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 
 Commit only the resulting `data/research-v1.json`, the page and code files;
 do not upload the raw research ZIP or use scheduled GitHub jobs.
+
+## Sleeper league integration (The 903 League)
+
+The **League forecasts** tab pre-fills the 2026 league ID
+`1312056699070197760`. When someone opens that tab, JavaScript requests
+league metadata, manager/team names, rosters and weekly matchup pairings
+from Sleeper's public read-only API. It also requests the publicly available
+Sleeper NFL player directory, caches a compact ID crosswalk in that visitor's
+browser for 24 hours, and maps Sleeper player IDs to the research model's
+GSIS IDs or matching names. The 251-player research snapshot is reused—
+there is no separate model fit, database, API token or paid process.
+
+For each team, an offline-tested dynamic-programming assignment selects the
+highest-scoring modeled starter combination under that league's actual QB,
+RB, WR, TE, FLEX and SUPER_FLEX lineup positions. The view offers a selected
+week, four calendar weeks from that week, and the remaining regular season
+to Week 18. Future weekly rows come from the same frozen Week 9 model.
+
+Sleeper live scores/Week 10 results are never fed into these projections.
+No player availability, injury or actual manager start/sit decision is
+forecast. Players absent from the research export are marked as having no
+model coverage; team totals may therefore be understated. Ancillary Sleeper
+scoring rules (fumbles/bonuses) are not modeled. The league identifier is
+public and only league information already exposed by Sleeper is displayed;
+no private API keys or member data are committed to the repo.
+
+The previously published standalone `sleeper.html` view remains available
+from the sidebar as **The 903 League**. The new **League forecasts** tab adds
+optimized starters, weekly matchups, modeled roster coverage and multi-week
+projections within the main dashboard; both use the same research JSON.
+
+Sleeper documents its read-only API as free for noncommercial use and asks
+clients to remain below 1,000 calls per minute and to fetch its player
+directory no more than once per day. The dashboard intentionally avoids
+polling and requires a manual refresh for new live roster information.
 
 ## Data & scoring
 

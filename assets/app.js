@@ -38,13 +38,14 @@
       item.classList.toggle("active", active);
       active ? item.setAttribute("aria-current", "page") : item.removeAttribute("aria-current");
     });
-    const headings = { rankings: "PLAYER RANKINGS", forecasts: "MULTI-GAME FORECASTS", value: "VALUE SIGNALS", comparison: "PLAYER COMPARISON", research: "MODEL RESEARCH", methodology: "SCORING & METHODS" };
+    const headings = { rankings: "PLAYER RANKINGS", forecasts: "MULTI-GAME FORECASTS", value: "VALUE SIGNALS", league: "MY SLEEPER LEAGUE", comparison: "PLAYER COMPARISON", research: "MODEL RESEARCH", methodology: "SCORING & METHODS" };
     $("#breadcrumb").textContent = headings[name];
     $(".sidebar").classList.remove("open");
     window.scrollTo({ top: 0, behavior: "smooth" });
     if (name === "comparison") renderComparison();
     if (name === "research") renderResearch();
     if (name === "forecasts" || name === "value") window.SidelineResearch?.onView(name);
+    if (name === "league") window.SidelineSleeper?.onView();
   }
 
   function renderHero() {
@@ -435,7 +436,7 @@
   }
 
   function bindEvents() {
-    $$(".nav-item").forEach(btn => btn.addEventListener("click", () => view(btn.dataset.view)));
+    $$(".nav-item[data-view]").forEach(btn => btn.addEventListener("click", () => view(btn.dataset.view)));
     $$("[data-go]").forEach(btn => btn.addEventListener("click", () => view(btn.dataset.go)));
     $("#menuToggle").addEventListener("click", () => $(".sidebar").classList.toggle("open"));
     $("#jumpRankings").addEventListener("click", () => $("#rankingsAnchor").scrollIntoView({ behavior: "smooth" }));

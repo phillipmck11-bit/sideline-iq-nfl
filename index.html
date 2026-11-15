@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080f1b" />
   <meta name="description" content="Independent NFL fantasy projections and matchup research. Custom scoring, verified free source data, and transparent model comparisons." />
   <title>Sideline Intelligence | NFL Performance Center</title>
-  <link rel="stylesheet" href="./assets/styles.css?v=research-v1-20261115" />
+  <link rel="stylesheet" href="./assets/styles.css?v=sleeper-league-20261115" />
 </head>
 <body>
   <div class="shell">
@@ -22,6 +22,7 @@
         <button class="nav-item active" data-view="rankings" aria-current="page"><span class="nav-icon">▦</span><span>Player rankings</span><span class="nav-indicator"></span></button>
         <button class="nav-item" data-view="forecasts"><span class="nav-icon">▤</span><span>Multi-game forecasts</span></button>
         <button class="nav-item" data-view="value"><span class="nav-icon">◇</span><span>Value signals</span></button>
+        <button class="nav-item" data-view="league"><span class="nav-icon">♜</span><span>League forecasts</span></button>
         <a class="nav-item" href="./sleeper.html" style="text-decoration:none;color:inherit"><span class="nav-icon">◈</span><span>The 903 League</span></a>
         <button class="nav-item" data-view="comparison"><span class="nav-icon">⇄</span><span>Player comparison</span><span id="compareNavCount" class="nav-count">0</span></button>
         <button class="nav-item" data-view="research"><span class="nav-icon">⌁</span><span>Model research</span></button>
@@ -188,6 +189,33 @@
           </div>
         </section>
 
+        <section id="view-league" class="view alt-view" aria-labelledby="leagueHeading">
+          <div class="alt-head lab-head"><div class="eyebrow"><span class="eyebrow-line"></span> THE 903 LEAGUE / SLEEPER × SIDELINE IQ</div>
+            <h1 id="leagueHeading">Your league.<br/><em>Our projections.</em></h1>
+            <p>All fantasy teams, lineup projections, league matchups and rest-of-season outlooks—using Sleeper's public roster data and our independent Week 9 statistical forecasts.</p>
+            <span class="lab-warning">FREE LIVE ROSTER LOOKUP · FROZEN RESEARCH THROUGH WEEK 9 · NO INJURY OR SNAP ADJUSTMENT</span>
+          </div>
+          <div class="league-connect"><div><span class="microtag">SLEEPER LEAGUE</span><label for="sleeperLeagueId">League ID or Sleeper link</label>
+              <input id="sleeperLeagueId" value="1312056699070197760" autocomplete="off" inputmode="text" aria-label="Sleeper league ID or link" />
+              <small>Saved only in this browser. Change the ID to inspect another league.</small></div>
+            <button class="primary-btn" id="sleeperConnect">Load / refresh league ↻</button></div>
+          <div class="lab-status" id="sleeperStatus" role="status">Open this tab to load The 903 League. No login or API key required.</div>
+          <div class="league-overview" id="sleeperOverview" hidden></div>
+          <div class="league-controls" id="sleeperControls" hidden>
+            <label class="filter-select">WEEK <select id="sleeperWeek" aria-label="Select forecast week"><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option></select></label>
+            <div class="league-horizons" role="group" aria-label="League projection horizon">
+              <button class="active" data-league-horizon="week">Selected week</button><button data-league-horizon="four">Next 4 weeks</button><button data-league-horizon="ros">ROS</button>
+            </div>
+          </div>
+          <div id="sleeperMatchups" class="league-matchups"></div>
+          <div class="league-section-label"><h2>Projected league standings <span class="title-dot">.</span></h2><p>Optimized starting lineups under your league's roster positions—not Sleeper's live fantasy scores.</p></div>
+          <div class="league-table-wrap"><div class="table-scroller"><table class="ranking-table league-table"><thead><tr>
+            <th>RANK</th><th>FANTASY TEAM</th><th>RECORD</th><th>PROJECTED STARTER POINTS</th><th>MODELED COVERAGE</th><th>VIEW</th>
+          </tr></thead><tbody id="sleeperTeams"><tr><td colspan="6" class="table-loading">League projections will appear here.</td></tr></tbody></table></div></div>
+          <div id="sleeperDetail" class="league-detail"></div>
+          <p class="lab-note">These projections assume the current roster stays intact and that projected players participate. The system optimizes a potential lineup for each scheduled week; it does <strong>not</strong> predict managers' actual start/sit decisions. Missing model coverage is disclosed, not treated as evidence of zero player ability. Scoring uses the eight fantasy categories approved for Sideline IQ, which may differ from ancillary Sleeper league settings.</p>
+        </section>
+
         <section id="view-comparison" class="view alt-view" aria-labelledby="compareHeading">
           <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> DECISION WORKBENCH / 02</div><h1 id="compareHeading">Head-to-head.<br/><em>No guesswork.</em></h1><p>Pin two players from the rankings to compare their expected points, four-game form, and weekly consistency.</p></div>
           <div class="compare-pickers">
@@ -245,7 +273,9 @@
     <div id="labDrawerContent"></div>
   </aside>
   <script src="./assets/research-lab.js?v=research-v1-metrics-20261115" defer></script>
-  <script src="./assets/app.js?v=research-v1-20261115" defer></script>
+  <script src="./assets/sleeper-core.js?v=sleeper-league-20261115" defer></script>
+  <script src="./assets/sleeper-league.js?v=sleeper-league-20261115" defer></script>
+  <script src="./assets/app.js?v=sleeper-league-20261115" defer></script>
 </body>
 </html>
 
