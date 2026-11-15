@@ -60,6 +60,9 @@
         <strong class="leader-pts">${num(p.expected_ppg)}</strong>
       </div>`).join("");
     $("#heroWeek").textContent = state.season === "2026" ? "WK " + meta.target_week : "2025";
+    $("#heroModelLabel").textContent = state.season === "2026"
+      ? (state.projectionMode === "stat-first" ? "STAT-FIRST MODEL" : "65/35 BASELINE")
+      : "2025 RETROSPECTIVE";
     $("#sidebarWeek").textContent = meta.target_week;
     $("#headerSeason").textContent = state.season;
     $("#metricPlayers").textContent = commas(rows.length);
