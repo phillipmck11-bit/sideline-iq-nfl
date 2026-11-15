@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#080f1b" />
+  <meta name="description" content="Independent NFL fantasy projections and matchup research. Custom scoring, verified free source data, and transparent model comparisons." />
+  <title>Sideline Intelligence | NFL Performance Center</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 42 42" fill="none"><path d="M6 31 18 9h7L13 31H6Z" fill="#c7f16b"/><path d="M18 31 30 9h7L25 31h-7Z" fill="#c7f16b"/><path d="m21 17 8 0-8 14h-8l8-14Z" fill="#8aaf4d"/></svg>
+        </div>
+        <div class="brand-copy"><strong>SIDELINE<span>IQ</span></strong><small>PERFORMANCE CENTER</small></div>
+      </div>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav-items">
+        <button class="nav-item active" data-view="rankings" aria-current="page"><span class="nav-icon">▦</span><span>Player rankings</span><span class="nav-indicator"></span></button>
+        <button class="nav-item" data-view="comparison"><span class="nav-icon">⇄</span><span>Player comparison</span><span id="compareNavCount" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="research"><span class="nav-icon">⌁</span><span>Model research</span></button>
+        <button class="nav-item" data-view="methodology"><span class="nav-icon">≡</span><span>Scoring & methods</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="status-card">
+          <div class="status-title"><span class="signal-dot"></span> DATA SNAPSHOT</div>
+          <strong>2026 / WEEK <span id="sidebarWeek">10</span></strong>
+          <p>All projections use completed games only. Weekly automation is intentionally deferred.</p>
+          <div class="status-foot"><span>PUBLIC DATA</span><span>NO PAID APIs</span></div>
+        </div>
+        <div class="sidebar-credit">INDEPENDENT RESEARCH <span>•</span> v1.0</div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu" id="menuToggle" aria-label="Toggle navigation">☰</button>
+          <span class="breadcrumbs">ANALYTICS <span>/</span> <strong id="breadcrumb">PLAYER RANKINGS</strong></span>
+        </div>
+        <div class="topbar-right">
+          <div class="source-pill"><span class="signal-dot"></span> VERIFIED FREE DATA</div>
+          <div class="topbar-separator"></div>
+          <span class="season-top">NFL <span id="headerSeason">2026</span></span>
+          <span class="avatar" aria-label="Sideline IQ">SI</span>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="load-error" id="loadError" role="alert" hidden>Dashboard data could not be loaded. Please refresh or check that the data file is deployed alongside the site.</div>
+
+        <section id="view-rankings" class="view active" aria-labelledby="heroTitle">
+          <div class="hero">
+            <div class="hero-copy">
+              <div class="eyebrow"><span class="eyebrow-line"></span> THE 2026 NFL SEASON <span class="eyebrow-divider">/</span> FANTASY PERFORMANCE INTELLIGENCE</div>
+              <h1 id="heroTitle">Every yard counts.<br/><em>Find your edge.</em></h1>
+              <p>Player projections, opponent trends, and real historical model evidence—built around your league's scoring, not a generic PPR template.</p>
+              <div class="hero-actions">
+                <button class="primary-btn" id="jumpRankings">Explore rankings <span>↗</span></button>
+                <button class="ghost-btn" data-go="research">View model accuracy <span>→</span></button>
+              </div>
+            </div>
+            <div class="hero-side">
+              <div class="hero-side-top"><span><span class="pulse-dot"></span> PREGAME BOARD</span><span class="hero-side-week" id="heroWeek">WK 10</span></div>
+              <div class="hero-side-label">TOP PROJECTED PLAYERS</div>
+              <div id="heroLeaders" class="leader-bars">
+                <div class="loading-line"></div><div class="loading-line"></div><div class="loading-line"></div>
+              </div>
+              <div class="hero-side-footer">BASELINE MODEL <span>•</span> CUSTOM LEAGUE SCORING</div>
+            </div>
+          </div>
+
+          <div class="section-kicker"><span>THE PREGAME PULSE</span><span class="kicker-right">01 / OVERVIEW</span></div>
+          <div class="metric-grid" id="metricGrid">
+            <article class="metric-card"><div class="metric-label">PLAYERS TRACKED <span>↗</span></div><strong id="metricPlayers">—</strong><small>Active in observed games</small></article>
+            <article class="metric-card"><div class="metric-label">NFL TEAMS <span>↗</span></div><strong id="metricTeams">—</strong><small>League-wide coverage</small></article>
+            <article class="metric-card"><div class="metric-label">HIGHEST PROJECTION <span>↗</span></div><strong id="metricTop">—</strong><small id="metricTopName">Top-ranked player</small></article>
+            <article class="metric-card accent-card"><div class="metric-label">UPCOMING BYE TEAMS <span>↗</span></div><strong id="metricByes">—</strong><small>Excluded from live matchups</small></article>
+          </div>
+
+          <section class="rank-section" id="rankingsAnchor">
+            <div class="section-kicker"><span>THE PLAYER BOARD</span><span class="kicker-right">02 / RANKINGS</span></div>
+            <div class="board">
+              <div class="board-header">
+                <div><div class="board-caption">FANTASY PROJECTIONS</div><h2>Player rankings <span class="title-dot">.</span></h2><p id="boardDescription">Week 10 baseline projections · strictly prior-week data</p></div>
+                <div class="board-header-actions">
+                  <label class="select-wrap season-wrap">SEASON <select id="seasonSelect" aria-label="Select season"><option value="2026">2026</option><option value="2025">2025</option></select></label>
+                  <button class="outline-btn" id="exportCsv" title="Download filtered rows as CSV">↓ <span>Export CSV</span></button>
+                </div>
+              </div>
+              <div class="position-tabs" role="group" aria-label="Filter position">
+                <button class="position-tab active" data-position="ALL">ALL PLAYERS <span id="countAll">—</span></button>
+                <button class="position-tab" data-position="QB">QB</button>
+                <button class="position-tab" data-position="RB">RB</button>
+                <button class="position-tab" data-position="WR">WR</button>
+                <button class="position-tab" data-position="TE">TE</button>
+              </div>
+              <div class="filter-row">
+                <label class="search-box"><span aria-hidden="true">⌕</span><input id="playerSearch" placeholder="Search players..." aria-label="Search players" autocomplete="off"/></label>
+                <label class="filter-select">TEAM <select id="teamFilter" aria-label="Filter team"><option value="ALL">All teams</option></select></label>
+                <label class="filter-select">MIN GAMES <select id="gamesFilter" aria-label="Minimum observed games"><option value="0">All games</option><option value="3">3+</option><option value="5">5+</option><option value="8">8+</option></select></label>
+                <label class="check-field" id="byeFilterLabel"><input type="checkbox" id="hideByes"/>Hide BYE</label>
+                <div class="result-label"><span id="rowCount">—</span> RESULTS</div>
+              </div>
+              <div class="table-scroller">
+                <table class="ranking-table">
+                  <thead><tr>
+                    <th><button class="sort-btn" data-sort="position_rank">RANK</button></th>
+                    <th><button class="sort-btn" data-sort="name">PLAYER</button></th>
+                    <th>OPPONENT</th>
+                    <th><button class="sort-btn" data-sort="ppg">SZN PPG</button></th>
+                    <th><button class="sort-btn" data-sort="recent_ppg">LAST 4</button></th>
+                    <th><button class="sort-btn current" data-sort="expected_ppg">PROJ PTS <span>↓</span></button></th>
+                    <th><button class="sort-btn" data-sort="delta">Δ VS SZN</button></th>
+                    <th>OPP TREND <span class="help-icon" title="Opponent's last four defensive games. Descriptive only; not used in baseline.">ⓘ</span></th>
+                    <th class="actions-head">COMPARE</th>
+                  </tr></thead>
+                  <tbody id="rankBody"><tr><td colspan="9" class="table-loading">Loading verified player statistics...</td></tr></tbody>
+                </table>
+              </div>
+              <div class="board-footer"><span id="tableFootnote">Projection = 65% last four games + 35% season average.</span><button id="loadMore" class="show-more">SHOW MORE PLAYERS <span>↓</span></button></div>
+            </div>
+          </section>
+
+          <div class="insight-grid">
+            <section class="insight-card">
+              <div class="insight-head"><span class="microtag">MODEL BENCHMARK</span><button class="text-btn" data-go="research">Full analysis →</button></div>
+              <h3>What does opponent context add?</h3><p>2025 matchup-only improvement in mean absolute error versus the player-only model. Higher positive gain is better.</p>
+              <div id="accuracyMini" class="accuracy-mini"></div>
+              <div class="insight-foot">Historical participation-conditioned backtest <span>•</span> Not a live forecast guarantee</div>
+            </section>
+            <section class="insight-card scouting-card">
+              <div class="insight-head"><span class="microtag blue">SCOUTING NOTE</span><span class="spark-star">✳</span></div>
+              <h3>Know what the numbers can—and can't—tell you.</h3>
+              <p>Explosive plays, opponent air yards, and yards after catch are available as historical matchup context. Rushing yards over expected and alignment splits are not claimed where the free feed cannot verify them.</p>
+              <button class="text-btn" data-go="methodology">Explore data coverage →</button>
+            </section>
+          </div>
+        </section>
+
+        <section id="view-comparison" class="view alt-view" aria-labelledby="compareHeading">
+          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> DECISION WORKBENCH / 02</div><h1 id="compareHeading">Head-to-head.<br/><em>No guesswork.</em></h1><p>Pin two players from the rankings to compare their expected points, four-game form, and weekly consistency.</p></div>
+          <div class="compare-pickers">
+            <label>PLAYER ONE <select id="compareFirst"><option value="">Choose a player</option></select></label>
+            <span class="versus">VS</span>
+            <label>PLAYER TWO <select id="compareSecond"><option value="">Choose a player</option></select></label>
+          </div>
+          <div id="compareResults" class="compare-grid"><div class="empty-state wide">Select two players to see your matchup.</div></div>
+          <div class="compare-footnote">Figures reflect your scoring rules. For 2026, no injury adjustment or matchup coefficient is applied.</div>
+        </section>
+
+        <section id="view-research" class="view alt-view" aria-labelledby="researchHeading">
+          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> VALIDATION LAB / 03</div><h1 id="researchHeading">Trust the test.<br/><em>Challenge the model.</em></h1><p>Results from chronological 2025 walk-forward experiments, using your requested scoring and strictly earlier-game features.</p></div>
+          <div class="research-banner"><span class="research-banner-icon">✓</span><div><strong>Real-data comparison complete</strong><p>Four position cohorts, 18 evaluation weeks. These are retrospective, participation-conditioned results—not verified live-week prediction accuracy.</p></div><span class="research-banner-tag">RESEARCH ONLY</span></div>
+          <div class="research-grid" id="researchCards"></div>
+          <div class="research-method"><span class="microtag">READ THE RESULT</span><h3>What counts as a meaningful win?</h3><div class="method-steps"><div><span>01</span><strong>Beat a basic benchmark</strong><p>Compare model error with an ordinary recent-scoring average.</p></div><div><span>02</span><strong>Check stability</strong><p>Review week-cluster confidence intervals and large-miss RMSE.</p></div><div><span>03</span><strong>Keep future information out</strong><p>Use past games only; research cohorts still exclude zero-opportunity players.</p></div></div></div>
+        </section>
+
+        <section id="view-methodology" class="view alt-view" aria-labelledby="methodHeading">
+          <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> THE PLAYBOOK / 04</div><h1 id="methodHeading">Built for<br/><em>your league.</em></h1><p>Exact scoring, transparent baselines, and clearly labeled limits. No subscriptions or paid-data dependencies.</p></div>
+          <div class="method-grid">
+            <section class="method-card"><span class="microtag">CUSTOM SCORING</span><h3>The points system</h3><div class="scoring-list">
+              <div><span>Passing yard</span><strong>0.05</strong></div>
+              <div><span>Passing TD</span><strong>4.0</strong></div>
+              <div><span>Interception</span><strong class="negative">−2.0</strong></div>
+              <div><span>Rushing / receiving yard</span><strong>0.10</strong></div>
+              <div><span>Rushing / receiving TD</span><strong>6.0</strong></div>
+              <div><span>RB / WR reception</span><strong>1.0</strong></div>
+              <div><span>TE reception</span><strong>1.5</strong></div>
+            </div></section>
+            <section class="method-card"><span class="microtag">PREGAME ENGINE</span><h3>How the projection works</h3><div class="formula"><strong>65%</strong> <span>LAST 4 OBSERVED GAMES</span><div class="formula-plus">+</div><strong>35%</strong> <span>SEASON POINTS PER GAME</span></div><p>All inputs stop before the target week. This baseline does not yet incorporate opponent metrics into projection weights.</p></section>
+          </div>
+          <section class="coverage-card"><span class="microtag">FEATURE AVAILABILITY</span><h3>What we can verify for free</h3><div class="coverage-table">
+            <div><span>QB passing air yards / attempt</span><strong class="available">AVAILABLE</strong></div>
+            <div><span>Opponent explosive rush/pass plays allowed</span><strong class="available">AVAILABLE</strong></div>
+            <div><span>Opponent air yards / YAC allowed</span><strong class="available">AVAILABLE</strong></div>
+            <div><span>QB rushes inside the 10</span><strong class="unavailable">DEFERRED</strong></div>
+            <div><span>Rushing yards over expected (RYOE)</span><strong class="unavailable">NOT VERIFIED</strong></div>
+            <div><span>Slot / outside / inline alignment splits</span><strong class="unavailable">DEFERRED</strong></div>
+          </div><p class="source-note">Source: publicly available <a href="https://github.com/nflverse/nflverse-data/releases/tag/stats_player" target="_blank" rel="noopener">nflverse weekly player statistics</a>. Matchup descriptors use observed defensive trends from the four most recent completed games. Historical model research is kept separate.</p></section>
+        </section>
+      </main>
+      <footer class="footer"><span>SIDELINE<span class="lime">IQ</span> <span class="divider-dot">•</span> OPEN-DATA NFL ANALYTICS</span><span>NO PAID APIS <span class="divider-dot">/</span> NO AUTOMATED BILLING <span class="divider-dot">/</span> BUILT FOR THE GAME</span></footer>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="player-drawer" id="playerDrawer" aria-label="Player details" aria-modal="true" role="dialog" hidden>
+    <div class="drawer-head"><span>PLAYER INTELLIGENCE</span><button class="drawer-close" id="drawerClose" aria-label="Close player details">×</button></div>
+    <div id="drawerContent"></div>
+  </aside>
+  <script src="./assets/app.js" defer></script>
+</body>
+</html>
