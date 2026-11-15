@@ -81,7 +81,16 @@
   function renderMetrics() {
     if (!state.snapshot) return;
     const pos = $("#metricPos").value;
-    const rows = state.snapshot.metrics.feature_ablation.filter(p => p.position === pos)
+    // Sparse QB passing and interception cells for RBs/WRs/TEs can show
+    // misleading 100% gains when the baseline error is effectively zero.
+    const relevant = {
+      QB: ["passing_yards", "passing_tds", "interceptions", "rushing_yards", "rushing_tds"],
+      RB: ["rushing_yards", "rushing_tds", "catches", "receiving_yards", "receiving_tds"],
+      WR: ["catches", "receiving_yards", "receiving_tds", "rushing_yards"],
+      TE: ["catches", "receiving_yards", "receiving_tds"],
+    };
+    const rows = state.snapshot.metrics.feature_ablation.filter(p =>
+      p.position === pos && relevant[pos].includes(p.metric))
       .sort((a, b) => Number(b.added_features_delta_pp) - Number(a.added_features_delta_pp));
     $("#labMetricRows").innerHTML = rows.map(row => {
       const delta = Number(row.added_features_delta_pp);
