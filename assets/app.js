@@ -124,7 +124,9 @@
         <td class="opponent-cell">${opponent}</td>
         <td class="point-value">${num(p.ppg)}</td>
         <td class="point-value">${num(p.recent_ppg)}</td>
-        <td class="projection">${num(p.expected_ppg)}</td>
+        <td class="projection"><button class="projection-open" data-inspect="${escape(p.id)}"
+          aria-label="View ${escape(p.name)} projected stat line" title="View the stats behind this projection">
+          <strong>${num(p.expected_ppg)}</strong><small>VIEW STATS ↗</small></button></td>
         <td class="${trendClass(p.delta)}">${signed(p.delta)}</td>
         <td>${state.season === "2025" ? '<span class="trend-tag">HISTORICAL</span>' : describeOpponent(p)}</td>
         <td><button class="row-compare ${selected ? "selected" : ""}" data-pin="${escape(p.id)}"
@@ -196,11 +198,55 @@
     </svg>`;
   }
 
+  function projectedStatFields(p) {
+    const s = p.stat_line;
+    if (!s) return [];
+    const field = (label, key, digits = 1) => ({label, value: num(s[key], digits)});
+    if (p.position === "QB") return [
+      field("Pass yards", "passing_yards"), field("Pass TDs", "passing_tds", 2),
+      field("Interceptions", "passing_interceptions", 2),
+      field("Rush yards", "rushing_yards"), field("Rush TDs", "rushing_tds", 2),
+    ];
+    const base = p.position === "RB" ? [
+      field("Rush attempts", "carries"), field("Rush yards", "rushing_yards"),
+      field("Rush TDs", "rushing_tds", 2), field("Receptions", "receptions"),
+      field("Rec yards", "receiving_yards"), field("Rec TDs", "receiving_tds", 2),
+    ] : [
+      field("Targets", "targets"), field("Receptions", "receptions"),
+      field("Rec yards", "receiving_yards"), field("Rec TDs", "receiving_tds", 2),
+    ];
+    if (p.position !== "RB" && (s.rushing_yards !== 0 || s.rushing_tds !== 0)) {
+      base.push(field("Rush yards", "rushing_yards"), field("Rush TDs", "rushing_tds", 2));
+    }
+    if (s.passing_yards !== 0 || s.passing_tds !== 0 || s.passing_interceptions !== 0) {
+      base.push(field("Pass yards", "passing_yards"), field("Pass TDs", "passing_tds", 2),
+        field("Interceptions", "passing_interceptions", 2));
+    }
+    base.push({label: "Rush + rec TDs", value: num(s.rushing_tds + s.receiving_tds, 2)});
+    return base;
+  }
+
+  function projectedStatPanel(p) {
+    const fields = projectedStatFields(p);
+    if (!fields.length) return "";
+    return `<div class="drawer-section projected-line">
+      <div class="statline-heading"><h3>${state.season === "2026" ? "Projected stat line" : "Retrospective stat averages"}</h3>
+        <span class="microtag">65% RECENT + 35% SEASON</span></div>
+      <div class="statline-grid">${fields.map(item => `
+        <div class="statline-cell"><small>${escape(item.label)}</small><strong>${item.value}</strong></div>`).join("")}</div>
+      <p>The unrounded estimates reproduce <strong>${num(p.expected_ppg, 2)} fantasy points</strong> under your scoring.
+        Fractional receptions and touchdowns are expected averages, not exact game outcomes.
+        Displayed stats are rounded.</p>
+    </div>`;
+  }
+
   function compareCard(p) {
     return `<article class="compare-card">
       <span class="microtag">${escape(p.position)} · ${escape(p.team)}</span>
       <h2>${escape(p.name)}</h2><div class="identity">${p.opponent && p.opponent !== "BYE" ? `Week ${state.payload.meta.target_week} ${p.home_away === "home" ? "vs" : "@"} ${p.opponent}` : state.season === "2025" ? "2025 season review" : "BYE WEEK"}</div>
       <div class="big-proj">${num(p.expected_ppg)}</div><div class="big-proj-label">${state.season === "2026" ? "PROJECTED FANTASY POINTS" : "RETROSPECTIVE FORM ESTIMATE"}</div>
+      <div class="compare-statline">${projectedStatFields(p).filter(item => item.label !== "Targets" && item.label !== "Rush attempts")
+        .map(item => `<span><strong>${item.value}</strong> ${escape(item.label)}</span>`).join("")}</div>
       <div class="compare-stat-grid">
         <div class="compare-stat"><small>SEASON PPG</small><strong>${num(p.ppg)}</strong></div>
         <div class="compare-stat"><small>LAST FOUR PPG</small><strong>${num(p.recent_ppg)}</strong></div>
@@ -279,6 +325,7 @@
       </div></div>
       <div class="drawer-projection"><small>${state.season === "2026" ? "WEEK " + state.payload.meta.target_week + " PROJECTION" : "2025 RETROSPECTIVE FORM"}</small>
         <strong>${num(p.expected_ppg)}</strong><span>fantasy pts</span></div>
+      ${projectedStatPanel(p)}
       <div class="drawer-two"><div><small>SEASON PPG</small><strong>${num(p.ppg)}</strong></div><div><small>LAST 4 PPG</small><strong>${num(p.recent_ppg)}</strong></div></div>
       <div class="drawer-section"><h3>Weekly production</h3>${trendSVG(p.trend)}<p>Each point reflects only your league's stated scoring categories.</p></div>
       <div class="drawer-section"><h3>Player & opponent lens</h3>${details.map(a => drawerFeature(...a)).join("")}

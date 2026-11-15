@@ -30,3 +30,22 @@ html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text)
 @media(max-width:1000px){.sidebar{width:74px;min-width:74px}.brand{padding:23px 15px 28px}.brand-copy,.nav-label,.nav-item>span:nth-child(2),.nav-count,.nav-indicator,.sidebar-bottom{display:none}.nav-items{padding:0 9px}.nav-item{justify-content:center;padding:11px}.nav-icon{font-size:23px}.hero{grid-template-columns:1fr 310px}.metric-grid{grid-template-columns:repeat(2,1fr)}.insight-grid{grid-template-columns:1fr}}
 @media(max-width:740px){.sidebar{display:none;position:fixed;width:248px;min-width:248px}.sidebar.open{display:flex}.sidebar.open .brand-copy,.sidebar.open .nav-label,.sidebar.open .nav-item>span:nth-child(2),.sidebar.open .sidebar-bottom{display:block}.sidebar.open .nav-item{justify-content:flex-start}.mobile-menu{display:inline;margin-right:17px}.content{padding:16px}.topbar{height:61px;padding:0 16px}.source-pill,.topbar-separator,.season-top{display:none}.topbar-right{gap:7px}.hero{grid-template-columns:1fr}.hero-copy{padding:30px 24px}.hero h1{font-size:52px}.hero-side{padding:22px 25px;border-left:0;border-top:1px solid #2d4453}.leader-bars{margin-bottom:2px}.metric-grid{gap:8px}.metric-card{padding:17px 15px}.metric-card strong{font-size:35px}.board-header{align-items:flex-start;flex-direction:column;padding:22px}.board-header-actions{width:100%;justify-content:space-between}.position-tabs{overflow-x:auto;padding:0 9px}.position-tab{padding:10px 12px;font-size:10px;flex-shrink:0}.filter-row{padding:13px}.search-box{flex-basis:100%}.result-label{flex-basis:100%;text-align:right}.accuracy-mini{grid-template-columns:repeat(2,1fr)}.insight-card{padding:22px}.footer{padding:20px 17px;flex-wrap:wrap}.alt-head{padding:30px 24px}.alt-head h1{font-size:52px}.method-grid,.compare-grid{grid-template-columns:1fr}.compare-pickers{gap:12px;padding:18px}.versus{font-size:24px}.compare-pickers label{min-width:0}.research-grid{grid-template-columns:1fr 1fr}.method-steps{grid-template-columns:1fr}.research-banner-tag{display:none}.coverage-card,.method-card{padding:21px}}
 @media(max-width:445px){.hero h1{font-size:46px}.eyebrow{font-size:8px;letter-spacing:1.2px}.metric-label{font-size:8px}.metric-card strong{font-size:31px}.research-grid{grid-template-columns:1fr}.compare-pickers{flex-direction:column;align-items:stretch}.versus{text-align:center}.formula{grid-template-columns:65px 1fr}.coverage-table>div{font-size:10px}.coverage-table strong{font-size:8px}}
+
+/* The unrounded scoring breakdown is available from every projected point cell. */
+.projection-open{display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:none;border:0;padding:0;color:var(--lime);line-height:1.1;text-align:left}
+.projection-open strong{font:800 19px var(--head)}
+.projection-open small{font:800 8px var(--font);letter-spacing:.6px;color:#95b4b2}
+.projection-open:hover small,.projection-open:focus-visible small{color:var(--lime);text-decoration:underline}
+.projected-line{margin:0 0 20px}
+.statline-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.statline-heading h3{margin:0}
+.statline-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.statline-cell{background:#192e37;border:1px solid #35564e;border-radius:6px;padding:13px 10px;min-width:0}
+.statline-cell small{display:block;text-transform:uppercase;font-size:9px;color:#a2baad;letter-spacing:.6px;font-weight:800;line-height:1.3}
+.statline-cell strong{display:block;font:900 27px/1.2 var(--head);color:#e9f5ec;margin-top:5px;font-variant-numeric:tabular-nums}
+.projected-line>p{font-size:11px;color:#95b5aa;line-height:1.65;margin:10px 0 0}
+.projected-line>p strong{color:var(--lime)}
+.compare-statline{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0 0}
+.compare-statline span{background:#20352f;border:1px solid #3a5449;border-radius:4px;padding:5px 7px;color:#acc5b6;font-size:10px}
+.compare-statline strong{color:var(--lime)}
+@media(max-width:445px){.statline-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
