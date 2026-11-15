@@ -10,6 +10,13 @@ GitHub Pages with **zero paid services, keys, or background jobs**.
 - `assets/app.js`: interactive rankings, search, filters, player scouting
   panel, projected stat-line breakdowns, comparisons, research accuracy,
   and browser-based CSV exports
+- `assets/research-lab.js` and `data/research-v1.json`: 251-player, Week-9-cutoff
+  research views for next game, next four scheduled games, ROS, descriptive
+  production-vs-model signals, player explanations, scheduled weekly rows,
+  2025 metric effectiveness, and historical error references
+- `scripts/build_research_payload.py`: local-only, standard-library export
+  script for turning the validated 251-player ZIP into the compact public JSON
+- `tests/test_research_payload.py`: offline consistency and scoring checks
 - `data/dashboard.json`: audited Week 10 pregame snapshot with **stat-first**
   fantasy projections, coherent projected box scores, and the previous 65/35
   baseline retained for instant comparison
@@ -30,7 +37,43 @@ The repository must be public under GitHub Free. Pages publishes a public
 website; do not place secrets or non-public data in this folder.
 
 No GitHub Actions workflows are required to host this site. The current
-snapshot is frozen until you manually publish a new `dashboard.json`.
+snapshots are frozen until you manually publish new JSON files.
+
+## The two new research views
+
+The **Multi-game forecasts** and **Value signals** views share
+`data/research-v1.json`, while the earlier rankings and 2025 retrospective
+views still use `data/dashboard.json`. This is deliberate: the new 251-player
+horizon models and the previously validated single-game model are *not*
+the same validation experiment.
+
+- Multi-game forecasts: a sortable, filterable table covering 40 QBs, 75 RBs,
+  100 WRs and 36 TEs. Player cards show box-score stats, next-game, next-four,
+  ROS, 2,125 scheduled weekly rows in total, uncertainty references and
+  player-specific explanations. CSV export is entirely in the browser.
+- Value signals: modeled next-game fantasy points minus recent-six-appearance
+  average, with positive/negative watchlists and observed opportunity proxies;
+  includes the 2025 stat-level feature-ablation report by position.
+
+**Research preview, not a separately approved production model.** The
+14 structural checks passed and fantasy stats reconcile, but this release's
+exact horizon models do not have an untouched 2026 holdout. The longer-term
+weekly rows divide horizon residuals evenly, not by opponent. Error bands
+are 2025 *historical absolute-error percentiles*, not calibrated individual
+prediction intervals. Estimates assume the player participates, do not adjust
+injuries/roster role, and do not establish independent underlying talent or
+market price. Do not treat positive/negative gaps as automatic trade advice.
+
+To regenerate the public research snapshot at $0, keep the validated research
+ZIP on your own computer (outside the public repository), then run:
+
+```sh
+python3 scripts/build_research_payload.py --source-zip /path/to/NFL_251_Dashboard_Staging_Validated.zip
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
+
+Commit only the resulting `data/research-v1.json`, the page and code files;
+do not upload the raw research ZIP or use scheduled GitHub jobs.
 
 ## Data & scoring
 
@@ -97,3 +140,4 @@ dashboard, and frozen 2025 model choices. The public site stores only the
 derived static JSON. **Do not run the older baseline-only builder after this
 integration without reapplying the stat-first overlay.** Weekly automation
 is deferred, as requested.
+

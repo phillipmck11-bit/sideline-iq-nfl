@@ -20,6 +20,8 @@
       <div class="nav-label">WORKSPACE</div>
       <nav class="nav-items">
         <button class="nav-item active" data-view="rankings" aria-current="page"><span class="nav-icon">▦</span><span>Player rankings</span><span class="nav-indicator"></span></button>
+        <button class="nav-item" data-view="forecasts"><span class="nav-icon">▤</span><span>Multi-game forecasts</span></button>
+        <button class="nav-item" data-view="value"><span class="nav-icon">◇</span><span>Value signals</span></button>
         <button class="nav-item" data-view="comparison"><span class="nav-icon">⇄</span><span>Player comparison</span><span id="compareNavCount" class="nav-count">0</span></button>
         <button class="nav-item" data-view="research"><span class="nav-icon">⌁</span><span>Model research</span></button>
         <button class="nav-item" data-view="methodology"><span class="nav-icon">≡</span><span>Scoring & methods</span></button>
@@ -142,6 +144,49 @@
           </div>
         </section>
 
+        <section id="view-forecasts" class="view alt-view" aria-labelledby="forecastHeading">
+          <div class="alt-head lab-head"><div class="eyebrow"><span class="eyebrow-line"></span> WEEK 9 DATA CUTOFF / RESEARCH V1</div>
+            <h1 id="forecastHeading">See the next game.<br/><em>See the season.</em></h1>
+            <p>A separate 251-player research forecast for the next scheduled game, next four team games, and the rest of the regular season. Each fantasy projection is calculated from its predicted passing, rushing and receiving stats.</p>
+            <span class="lab-warning">RESEARCH PREVIEW · CONDITIONAL ON PLAYING · WEEK 10 RESULTS EXCLUDED</span>
+          </div>
+          <div id="labLoad" class="lab-status" role="status">Loading the 251-player forecast snapshot…</div>
+          <div class="lab-summary" id="labSummary" hidden></div>
+          <div class="board lab-board">
+            <div class="board-header"><div><div class="board-caption">MULTI-HORIZON FORECAST</div><h2>Upcoming player projections <span class="title-dot">.</span></h2><p>Game totals, four scheduled games and ROS totals—by the same underlying research data.</p></div>
+              <button class="outline-btn" id="labCsv">↓ <span>Export forecasts</span></button>
+            </div>
+            <div class="filter-row lab-filters"><label class="search-box"><span aria-hidden="true">⌕</span><input id="forecastSearch" placeholder="Find a player or team…" aria-label="Search forecast players"/></label>
+              <label class="filter-select">POSITION <select id="forecastPos" aria-label="Filter forecast position"><option value="ALL">All positions</option><option value="QB">QB</option><option value="RB">RB</option><option value="WR">WR</option><option value="TE">TE</option></select></label>
+              <span class="result-label" id="forecastCount">— PLAYERS</span></div>
+            <div class="table-scroller"><table class="ranking-table lab-table"><thead><tr>
+              <th>PLAYER</th><th>NEXT GAME</th><th><button class="sort-btn" data-forecast-sort="next">GAME PTS</button></th>
+              <th><button class="sort-btn" data-forecast-sort="four">NEXT 4 PTS</button></th><th><button class="sort-btn" data-forecast-sort="ros">ROS PTS</button></th>
+              <th><button class="sort-btn" data-forecast-sort="gap">MODEL − RECENT</button></th><th>PLAYER CARD</th>
+            </tr></thead><tbody id="forecastRows"><tr><td colspan="7" class="table-loading">Loading research projections…</td></tr></tbody></table></div>
+            <div class="board-footer"><span>Weeks 2+ are allocations of horizon totals, not independent opponent-specific forecasts.</span><button id="labMore" class="show-more">SHOW MORE PLAYERS ↓</button></div>
+          </div>
+          <div class="lab-note">Next-four and ROS projections are sums across scheduled games, not per-game averages. All projections omit injury, availability and participation adjustments. Historical error bands in player cards are <strong>not calibrated prediction intervals</strong>.</div>
+        </section>
+
+        <section id="view-value" class="view alt-view" aria-labelledby="valueHeading">
+          <div class="alt-head lab-head"><div class="eyebrow"><span class="eyebrow-line"></span> PRODUCTION VS MODEL / RESEARCH V1</div>
+            <h1 id="valueHeading">Spot the gap.<br/><em>Question the price.</em></h1>
+            <p>Compare a player's next-game statistical forecast with their last six recorded appearances. A positive gap flags modeled improvement; a negative gap flags potential regression. Neither proves underlying talent, trade value or injury status.</p>
+            <span class="lab-warning">DESCRIPTIVE SIGNALS ONLY · NO MARKET PRICES OR INDEPENDENT TALENT SCORES</span>
+          </div>
+          <div class="lab-value-filter"><label class="search-box"><span aria-hidden="true">⌕</span><input id="valueSearch" placeholder="Search players…" aria-label="Search value candidates"/></label>
+            <label class="filter-select">POSITION <select id="valuePos" aria-label="Filter value position"><option value="ALL">All positions</option><option value="QB">QB</option><option value="RB">RB</option><option value="WR">WR</option><option value="TE">TE</option></select></label></div>
+          <div class="lab-value-grid"><section class="lab-signal-panel"><div class="lab-panel-top"><span class="microtag">MODEL ABOVE RECENT FORM</span><strong>Positive gap ↑</strong></div><p>Possible rebound or increased production, conditional on playing.</p><div id="valuePositive"></div></section>
+            <section class="lab-signal-panel"><div class="lab-panel-top"><span class="microtag">MODEL BELOW RECENT FORM</span><strong>Negative gap ↓</strong></div><p>Recent scoring exceeds this model's next-game expectation.</p><div id="valueNegative"></div></section></div>
+          <div class="lab-metric-panel"><div class="lab-panel-top"><div><span class="microtag">METRIC EFFECTIVENESS / HISTORICAL 2025</span><h2>Which inputs improved the estimates?</h2></div>
+            <label class="filter-select">POSITION <select id="metricPos" aria-label="Filter metric study position"><option value="QB">QB</option><option value="RB">RB</option><option value="WR">WR</option><option value="TE">TE</option></select></label></div>
+            <p>This compares the basic model with the fuller feature group on 2025 stat-by-stat research. Positive percentage-point changes favored the added features; negative changes did not. It does not establish causality or validate the exact released horizon model.</p>
+            <div class="table-scroller"><table class="ranking-table lab-table"><thead><tr><th>STAT FORECAST</th><th>BASIC VS BASELINE</th><th>FULL VS BASELINE</th><th>ADDED FEATURES Δ</th></tr></thead><tbody id="labMetricRows"></tbody></table></div>
+            <p class="lab-caveat">The requested NGS-style separation, cushion, RYOE, time-to-throw and CPOE inputs are not all verified in this free snapshot. We show only tested historical feature groups and explicitly leave independent talent scores unavailable.</p>
+          </div>
+        </section>
+
         <section id="view-comparison" class="view alt-view" aria-labelledby="compareHeading">
           <div class="alt-head"><div class="eyebrow"><span class="eyebrow-line"></span> DECISION WORKBENCH / 02</div><h1 id="compareHeading">Head-to-head.<br/><em>No guesswork.</em></h1><p>Pin two players from the rankings to compare their expected points, four-game form, and weekly consistency.</p></div>
           <div class="compare-pickers">
@@ -193,6 +238,13 @@
     <div class="drawer-head"><span>PLAYER INTELLIGENCE</span><button class="drawer-close" id="drawerClose" aria-label="Close player details">×</button></div>
     <div id="drawerContent"></div>
   </aside>
-  <script src="./assets/app.js?v=stat-first-20261115" defer></script>
+  <div class="drawer-backdrop" id="labDrawerBackdrop" hidden></div>
+  <aside class="player-drawer" id="labDrawer" aria-label="Research player card" aria-modal="true" role="dialog" hidden>
+    <div class="drawer-head"><span>RESEARCH PLAYER CARD</span><button class="drawer-close" id="labDrawerClose" aria-label="Close research player card">×</button></div>
+    <div id="labDrawerContent"></div>
+  </aside>
+  <script src="./assets/research-lab.js?v=research-v1-20261115" defer></script>
+  <script src="./assets/app.js?v=research-v1-20261115" defer></script>
 </body>
 </html>
+
