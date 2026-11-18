@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sideline IQ | Dynasty Research</title><link rel="stylesheet" href="./assets/styles.css">
+<style>
+.research-shell{max-width:1480px;margin:auto;padding:24px 28px 60px;color:#eaf1fb}
+.research-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.research-top a{color:#c7f16b;text-decoration:none;font-weight:700}
+.research-shell h1{font-size:clamp(32px,4vw,56px);margin:26px 0 8px}
+.research-shell p{color:#a8bad1;line-height:1.55}
+.research-pill{display:inline-block;padding:7px 12px;border:1px solid #45596b;border-radius:99px;color:#c7f16b;font-size:12px}
+.research-nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}
+.research-nav button,.research-filters select,.research-filters input,.research-shell button{background:#152338;color:#eaf1fb;border:1px solid #354960;border-radius:9px;padding:10px 13px;cursor:pointer}
+.research-nav button.active{background:#c7f16b;color:#101b2c;font-weight:800}
+.research-filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:16px 0}
+.research-filters label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#a8bad1}
+.research-panel{background:#111e30;border:1px solid #293b52;border-radius:16px;padding:20px;margin-top:16px}
+.research-panel h2{margin:0 0 12px;font-size:23px}
+.research-table{overflow:auto;max-height:650px}
+.research-table table{width:100%;border-collapse:collapse;font-size:13px}
+.research-table th{position:sticky;top:0;background:#1b2d43;text-align:left;color:#c7f16b;white-space:nowrap}
+.research-table td,.research-table th{padding:11px 12px;border-bottom:1px solid #2b3c51}
+.research-table td{white-space:nowrap}
+.research-table tr:hover td{background:#1a2b42}
+.research-table tr[data-player]{cursor:pointer}
+.research-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:15px 0}
+.research-metric{background:#152338;padding:15px;border-radius:12px;border:1px solid #2b3c51}
+.research-metric strong{display:block;font-size:25px;color:#fff;margin-top:5px}
+.research-metric small{color:#9fb3cc}
+.research-note{border-left:3px solid #c7f16b;padding:12px 15px;background:#182739;margin:14px 0;color:#b8c8db;font-size:13px}
+.research-panel[hidden]{display:none}
+</style></head><body>
+<main class="research-shell">
+<div class="research-top"><a href="./index.html">← SIDELINE IQ / PERFORMANCE CENTER</a><span class="research-pill">2026 RESEARCH SNAPSHOT · NOT LIVE</span></div>
+<h1>Dynasty <em style="color:#c7f16b">Research Lab.</em></h1>
+<p>Four-position forecasts, underlying opportunity, player cards, young-receiver breakouts and historical model comparisons. All calculations are based on the bundled historical research snapshots.</p>
+<div class="research-note">Research preview only. Latest player observations are Week 9 or earlier; injury status, depth-chart changes and live schedules are not verified. Breakout scores are uncalibrated, not probabilities or trade valuations. No paid APIs or background jobs.</div>
+<nav class="research-nav" aria-label="Research sections">
+<button class="active" data-tab="forecast">QB/RB/WR/TE forecasts</button>
+<button data-tab="cards">Player cards</button>
+<button data-tab="opportunity">Opportunity & ability</button>
+<button data-tab="breakout">WR breakout watchlist</button>
+<button data-tab="validation">Model validation</button>
+</nav>
+<div class="research-filters"><label>Position<select id="position"><option value="ALL">All positions</option><option>QB</option><option>RB</option><option>WR</option><option>TE</option></select></label><label>Search player<input id="search" placeholder="Player name"></label><label>Forecast horizon<select id="horizon"><option value="4">Next 4 calendar weeks</option><option value="1">Next calendar week</option></select></label><button id="export">Export current table CSV ↓</button></div>
+<section id="panel-forecast" class="research-panel"><h2>Projected fantasy production</h2><p>Predicted underlying statistics converted using your custom scoring. These are calendar-week forecasts, not guaranteed starts.</p><div id="forecastMetrics" class="research-metrics"></div><div id="forecastTable" class="research-table"></div></section>
+<section id="panel-cards" class="research-panel" hidden><h2>Individual player cards</h2><p>Four-appearance projections are distinct from four-calendar-week forecasts.</p><label>Choose player <select id="cardPlayer"></select></label><div id="cardDetails"></div></section>
+<section id="panel-opportunity" class="research-panel" hidden><h2>Ability & opportunity diagnostics</h2><p>Historical correlations between measured predictors and subsequent four-week fantasy output. Correlation is not causation or an independent player-quality score.</p><div id="opportunityTable" class="research-table"></div></section>
+<section id="panel-breakout" class="research-panel" hidden><h2>First-time young WR breakout watchlist</h2><p>Age 25 or younger; no prior 1,000-yard receiving season or 100-target season. Historical career eligibility is checked before each prediction checkpoint. Scores are not calibrated probabilities.</p><div class="research-filters"><label>Checkpoint<select id="checkpoint"></select></label><label>Research outcome<select id="outcome"></select></label></div><div id="breakoutTable" class="research-table"></div></section>
+<section id="panel-validation" class="research-panel" hidden><h2>Historical model selection</h2><p>Position- and statistic-specific chronological comparisons. Lower mean absolute error is better; no claim of calibrated rest-of-season or trade-value predictions.</p><div id="validationTable" class="research-table"></div></section>
+<div class="research-note">Custom fantasy scoring: 0.05 points/passing yard, 4/passing TD, −2/INT, 0.1/rushing or receiving yard, 6/rushing or receiving TD, 1/RB or WR reception, 1.5/TE reception. Historical error P80 is not a calibrated individual prediction interval.</div>
+</main><script src="./assets/dynasty-research.js?v=20261117" defer></script></body></html>
