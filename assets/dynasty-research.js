@@ -93,6 +93,7 @@ async function init(){
  await Promise.all(names.map(async name=>{
   const r=await fetch("./data/"+name+".csv");if(!r.ok)throw Error(name+" HTTP "+r.status);
   DATA[name]=parseCSV(await r.text());
+  if (!DATA[name].length) throw Error(name+" has no parsed player/research rows");
  }));
  const checkpoints=[...new Set(DATA.wr_breakout_2026.map(r=>r.checkpoint))].sort((a,b)=>n(a)-n(b));
  $("checkpoint").innerHTML=checkpoints.map(x=>'<option value="'+esc(x)+'">Week '+esc(x)+'</option>').join("");
@@ -107,6 +108,7 @@ async function init(){
   refresh();
  }));
  refresh();
+  document.querySelector(".research-pill").textContent="RESEARCH LOADED · 2026 HISTORICAL";
  }catch(e){document.querySelector(".research-shell").insertAdjacentHTML("afterbegin",'<div class="research-note">Unable to load research data: '+esc(e.message)+'</div>');}
 }
 init();

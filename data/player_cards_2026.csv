@@ -1,5 +1,3 @@
-<PARSED TEXT FOR SHEET: 1 / 1 TABS
-TAB NAME: full_platform_player_cards.csv>
 index,player_id,player,position,as_of_last_week,attempts,carries,fantasy,passing_interceptions,passing_tds,passing_yards,receiving_tds,receiving_yards,receptions,rushing_tds,rushing_yards,targets,forecast_4_appearance_fantasy
 0,00-0023459,Aaron Rodgers,QB,9,33.51121570589733,1.8278553057471096,17.545305655274053,0.5,1.5,236.1023281916122,0.0,0.0,0.0,0.0,5.297803925274428,0.017949363917336,70.18122262109621
 1,00-0026498,Matthew Stafford,QB,9,33.21569205450888,1.7109710628122423,17.41976981615764,0.75,1.75,234.94293825521035,0.0,0.0,0.0,0.0,4.2065985746370025,0.0134418000120772,69.67907926463056
