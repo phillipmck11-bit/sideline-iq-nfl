@@ -16,7 +16,7 @@ function parseCSV(s){
  const headers=out.shift()||[];return out.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??""])));
 }
 function table(id,rows,columns,labels={}){
- currentRows=rows;currentColumns=columns;
+ if(!$(id).closest(".research-panel").hidden){currentRows=rows;currentColumns=columns;}
  const head=columns.map(c=>'<th>'+esc(labels[c]||c.replaceAll("_"," "))+'</th>').join("");
  const body=rows.slice(0,500).map(r=>'<tr '+(r.player_id?'data-player="'+esc(r.player_id)+'"':'')+'>'+columns.map(c=>'<td>'+esc(r[c])+'</td>').join("")+'</tr>').join("");
  $(id).innerHTML='<table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table><p>'+rows.length+' rows'+(rows.length>500?' · first 500 displayed':'')+'</p>';
