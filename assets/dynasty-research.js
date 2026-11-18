@@ -87,28 +87,47 @@ function exportCSV(){
  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download="sideline-iq-research.csv";a.click();URL.revokeObjectURL(url);
 }
-async function init(){
- try{
- const names=["calendar_forecasts_2026","player_cards_2026","wr_breakout_2026","model_selection","signal_diagnostics"];
- await Promise.all(names.map(async name=>{
-  const r=await fetch("./data/"+name+".csv");if(!r.ok)throw Error(name+" HTTP "+r.status);
-  DATA[name]=parseCSV(await r.text());
-  if (!DATA[name].length) throw Error(name+" has no parsed player/research rows");
- }));
- const checkpoints=[...new Set(DATA.wr_breakout_2026.map(r=>r.checkpoint))].sort((a,b)=>n(a)-n(b));
- $("checkpoint").innerHTML=checkpoints.map(x=>'<option value="'+esc(x)+'">Week '+esc(x)+'</option>').join("");
- $("checkpoint").value=checkpoints[checkpoints.length-1];
- $("outcome").innerHTML=[...new Set(DATA.wr_breakout_2026.map(r=>r.outcome))].map(x=>'<option value="'+esc(x)+'">'+esc(x.replaceAll("_"," "))+'</option>').join("");
- ["position","search","horizon","checkpoint","outcome"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",refresh));
- $("cardPlayer").addEventListener("change",showCard);
- $("export").addEventListener("click",exportCSV);
+function showLoadError(message){
+ let el=document.getElementById("researchLoadStatus");
+ if(!el){el=document.createElement("div");el.id="researchLoadStatus";el.className="research-note";document.querySelector(".research-nav").after(el);}
+ el.textContent=message;
+}
+function wireTabs(){
  document.querySelectorAll("[data-tab]").forEach(btn=>btn.addEventListener("click",()=>{
   document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b===btn));
   document.querySelectorAll("[id^=panel-]").forEach(p=>p.hidden=p.id!=="panel-"+btn.dataset.tab);
-  refresh();
+  if(DATA.calendar_forecasts_2026)refresh();
  }));
- refresh();
-  document.querySelector(".research-pill").textContent="RESEARCH LOADED · 2026 HISTORICAL";
- }catch(e){document.querySelector(".research-shell").insertAdjacentHTML("afterbegin",'<div class="research-note">Unable to load research data: '+esc(e.message)+'</div>');}
 }
-init();
+async function init(){
+ wireTabs();
+ showLoadError("Loading research datasets…");
+ try{
+  const names=["calendar_forecasts_2026","player_cards_2026","wr_breakout_2026","model_selection","signal_diagnostics"];
+  const loaded=await Promise.all(names.map(async name=>{
+   const r=await fetch("./data/"+name+".csv?v=research-fix-20261118",{cache:"no-store"});
+   if(!r.ok)throw Error(name+" returned HTTP "+r.status);
+   const rows=parseCSV(await r.text());
+   if(!rows.length)throw Error(name+" contains no data rows");
+   return [name,rows];
+  }));
+  for(const [name,rows] of loaded)DATA[name]=rows;
+  if(!DATA.player_cards_2026[0].player||!DATA.wr_breakout_2026[0].player_name)
+   throw Error("Player data headers were not recognized; refresh to retrieve corrected CSV files.");
+  const checkpoints=[...new Set(DATA.wr_breakout_2026.map(r=>r.checkpoint))].sort((a,b)=>n(a)-n(b));
+  $("checkpoint").innerHTML=checkpoints.map(x=>'<option value="'+esc(x)+'">Week '+esc(x)+'</option>').join("");
+  $("checkpoint").value=checkpoints[checkpoints.length-1];
+  $("outcome").innerHTML=[...new Set(DATA.wr_breakout_2026.map(r=>r.outcome))].map(x=>'<option value="'+esc(x)+'">'+esc(x.replaceAll("_"," "))+'</option>').join("");
+  ["position","search","horizon","checkpoint","outcome"].forEach(id=>$(id).addEventListener(id==="search"?"input":"change",refresh));
+  $("cardPlayer").addEventListener("change",showCard);
+  $("export").addEventListener("click",exportCSV);
+  refresh();
+  document.getElementById("researchLoadStatus")?.remove();
+  document.querySelector(".research-pill").textContent="RESEARCH LOADED · 2026 HISTORICAL";
+ }catch(e){
+  showLoadError("Research data failed to load: "+e.message+". Navigation remains available; try refreshing the page.");
+  console.error("Sideline IQ research load failure",e);
+ }
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+else init();
