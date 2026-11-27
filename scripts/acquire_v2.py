@@ -9,9 +9,18 @@ IDENTITY = {"player_id","player_name","player_display_name","position","position
 def source(year):
     return BASE + f"stats_player/stats_player_week_{year}.csv.gz"
 
+def read_csv_bytes(data):
+    if data[:2] == b"\x1f\x8b":
+        data = gzip.decompress(data)
+    reader = csv.DictReader(io.StringIO(data.decode("utf-8-sig")))
+    required = {"player_id", "position", "season_type", "season", "week"}
+    if not required.issubset(reader.fieldnames or []):
+        raise ValueError(f"Missing identity columns: {required - set(reader.fieldnames or [])}")
+    return list(reader)
+
 def download(url):
     with urllib.request.urlopen(url, timeout=90) as response:
-        return list(csv.DictReader(io.StringIO(gzip.decompress(response.read()).decode("utf-8-sig"))))
+        return read_csv_bytes(response.read())
 
 def number(value):
     try:
@@ -45,11 +54,14 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--years", nargs="+", type=int, default=[2026])
     p.add_argument("--out", type=Path, default=Path("local-data/v2"))
+    p.add_argument("--input", type=Path, help="Use an already downloaded CSV or CSV.gz instead of networking (one year only)")
     args = p.parse_args()
+    if args.input and len(args.years) != 1:
+        p.error("--input requires exactly one year")
     args.out.mkdir(parents=True, exist_ok=True)
     for year in args.years:
-        rows = normalize(download(source(year)), year)
-        payload = {"source":source(year),"retrieved_at":datetime.now(timezone.utc).isoformat(),"season":year,"latest_week":max(r["week"] for r in rows),"row_count":len(rows),"rows":rows}
+        rows = normalize(read_csv_bytes(args.input.read_bytes()) if args.input else download(source(year)), year)
+        payload = {"source":source(year),"retrieved_at":datetime.now(timezone.utc).isoformat(),"season":year,"latest_week":max(r["week"] for r in rows),"row_count":len(rows),"license":"CC BY 4.0","attribution":"nflverse contributors; NFL play-by-play-derived player statistics; transformed to regular-season QB/RB/WR/TE player-week JSON by Sideline IQ","rows":rows}
         target = args.out / f"player-week-{year}.json"
         temp = target.with_suffix(".tmp")
         temp.write_text(json.dumps(payload, allow_nan=False, separators=(",",":")), encoding="utf-8")
