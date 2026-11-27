@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 BASE = "https://github.com/nflverse/nflverse-data/releases/download/"
 POSITIONS = {"QB", "RB", "WR", "TE"}
-IDENTITY = {"player_id","player_name","player_display_name","position","position_group","team","recent_team","opponent_team","season","week","season_type","headshot_url"}
+IDENTITY = {"player_id","player_name","player_display_name","position","position_group","team","recent_team","opponent_team","season","week","season_type","headshot_url","game_id"}
 def source(year):
     return BASE + f"stats_player/stats_player_week_{year}.csv.gz"
 
@@ -14,9 +14,14 @@ def read_csv_bytes(data):
         data = gzip.decompress(data)
     reader = csv.DictReader(io.StringIO(data.decode("utf-8-sig")))
     required = {"player_id", "position", "season_type", "season", "week"}
+    if len(set(reader.fieldnames or [])) != len(reader.fieldnames or []):
+        raise ValueError("Duplicate CSV headers")
     if not required.issubset(reader.fieldnames or []):
         raise ValueError(f"Missing identity columns: {required - set(reader.fieldnames or [])}")
-    return list(reader)
+    rows = list(reader)
+    if any(None in row or any(v is None for v in row.values()) for row in rows):
+        raise ValueError("Malformed CSV row")
+    return rows
 
 def download(url):
     with urllib.request.urlopen(url, timeout=90) as response:
