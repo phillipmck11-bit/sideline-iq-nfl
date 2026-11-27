@@ -26,3 +26,7 @@
 - 7e375a186bf7afd305b731278a7e1c2a3d2eccd0: explicit additive metric whitelist and ratio-of-totals aggregation; missing inputs remain null; unknown and NGS rate metrics excluded from totals.
 - 6a5008de85c8fc03c265f5d8cd736e09e930b4a4: nine regression assertions added (not executed this run).
 - 640d63d84002157bb414fad58307e9ba5ea9fc08: player totals through selected week view integrated into explorer; read back from branch. Browser tests pending. Real source files remain necessary; user already notified in prior session. No main deployment or paid services. Next: execute tests, validate actual snapshot and reconcile totals, then release review.
+
+## 2026-11-27 — snapshot release audit
+- a43046ab4bc4212eb7894f2cd30ad153a64d82ea: added scripts/audit_snapshot_v2.py to check 2026 GSIS identity, unique player-weeks, contiguous weeks, all four positions, finite metrics, counts and per-metric coverage. Read back exact contents; execution pending. Structural audit is not proof of source accuracy.
+- Retried curl: DNS failure (error 6); /mnt/data empty. Real-data validation remains blocked pending source files or restored networking. Next: run audit and regression suites on actual source snapshot, reconcile totals, test browser, review release. No refresh work, paid services or main changes.
