@@ -20,3 +20,9 @@
 - 460664f52e6d9af30e75d27d59ff1e3c6d1f83c2 and 30718a35b1b651cc4e2463b3165a392991fcca52: browser imports original weekly CSV/gzip or normalized JSON, plus approved static snapshot auto-load. Nine assertions passed on copied parser in Node before game_id preservation change; full browser test not executed.
 - 8678e9eb314896220a6c08222c3f9b33ae5212ff and 2bc440538992c34ab681c0b1eed3aabc8ded1fd5: offline NGS identity joins with coverage reports and five synthetic tests; tests not yet run. All four changed code/test files read back from branch. Source catalog updated with license and offline instructions.
 - Next: acquire user-uploaded source files or retry free download; execute full tests and inspect data coverage; reconcile totals and NGS joins, add safe season-level view, package approved static snapshot (remove/avoid unrelated third-party imagery), verify browser behavior, then present release for review. Weekly refresh deferred. No new spending, no main deployment. Hourly automation retained.
+
+## 2026-11-27 — player totals view
+- Retried direct source download in container: curl error 6, could not resolve github.com. No uploaded source files in runtime. Existing model outputs not reused.
+- 7e375a186bf7afd305b731278a7e1c2a3d2eccd0: explicit additive metric whitelist and ratio-of-totals aggregation; missing inputs remain null; unknown and NGS rate metrics excluded from totals.
+- 6a5008de85c8fc03c265f5d8cd736e09e930b4a4: nine regression assertions added (not executed this run).
+- 640d63d84002157bb414fad58307e9ba5ea9fc08: player totals through selected week view integrated into explorer; read back from branch. Browser tests pending. Real source files remain necessary; user already notified in prior session. No main deployment or paid services. Next: execute tests, validate actual snapshot and reconcile totals, then release review.
