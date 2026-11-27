@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict');
+const {aggregate}=require('../assets/aggregate-v2.js');
+const a={player_id:'a',season:2026,week:1,position:'WR',targets:2,receptions:1,receiving_yards:20,ngs_receiving_avg_separation:3};
+const b={...a,week:2,targets:8,receptions:6,receiving_yards:40,ngs_receiving_avg_separation:4};
+const [r]=aggregate([a,b]);
+assert.equal(r.targets,10);assert.equal(r.catch_pct,70);assert.equal(r.yards_per_target,6);assert.equal(r.observed_weeks,2);assert.equal(r.week,2);assert.equal(r.ngs_receiving_avg_separation,undefined);
+assert.equal(aggregate([a,{...b,targets:null}])[0].targets,null);
+assert.equal(aggregate([{...a,targets:0}])[0].catch_pct,null);
+assert.equal(aggregate([a,{...b,season:2025}]).length,2);
+console.log('9 assertions passed');
